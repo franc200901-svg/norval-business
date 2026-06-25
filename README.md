@@ -19,7 +19,6 @@ DOCTYPE html>
         <h1>Rejoignez NORVAL BUSINESS</h1>
         <div class="info">🎁 Gagnez 24F/jour + 100F par filleul</div>
         <input type="tel" id="numero" placeholder="Votre numéro WhatsApp (228XXXXXXXX)" required>
-        <input type="tel" id="parrain" placeholder="Numéro du parrain" required>
         <div class="error" id="error"></div>
         <button onclick="inscrire()">S'inscrire - Activation 500F</button>
     </div>
