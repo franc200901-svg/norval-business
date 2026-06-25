@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tâches - Norval Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Montserrat',sans-serif;background:#0f172a;color:#e2e8f0;padding:20px}
+     .container{max-width:600px;margin:0 auto}
+     .header{background:linear-gradient(135deg,#1e40af 0%,#3b82f6 100%);padding:25px;border-radius:16px;margin-bottom:20px;text-align:center}
+     .header h1{font-size:24px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+     .reset{background:linear-gradient(90deg,#f59e0b,#fbbf24);padding:12px;border-radius:10px;color:white;text-align:center;margin-bottom:20px;font-weight:700;font-size:14px;text-transform:uppercase}
+     .card{background:#1e293b;padding:25px;border-radius:16px;border:1px solid #334155;margin-bottom:15px;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+        h3{color:#fff;font-size:18px;font-weight:700;margin-bottom:8px;text-transform:uppercase}
+     .card p{color:#94a3b8;font-size:13px;margin-bottom:15px;font-weight:600}
+     .btn{background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:14px 20px;border:none;border-radius:10px;font-weight:800;cursor:pointer;width:100%;margin-top:12px;text-decoration:none;display:block;text-align:center;text-transform:uppercase;font-size:13px;box-shadow:0 6px 15px rgba(16,185,129,0.3)}
+     .btn:disabled{background:#334155;cursor:not-allowed;box-shadow:none}
+     .btn-social{background:linear-gradient(135deg,#3b82f6 0%,#1d4ed8 100%);box-shadow:0 6px 15px rgba(59,130,246,0.3)}
+     .btn-yt{background:linear-gradient(135deg,#dc2626 0%,#991b1b 100%);box-shadow:0 6px 15px rgba(220,38,38,0.3)}
+     .btn-tiktok{background:linear-gradient(135deg,#000 0%,#1f2937 100%);box-shadow:0 6px 15px rgba(0,0,0,0.5)}
+     .total{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);padding:20px;border-radius:16px;text-align:center;font-size:22px;font-weight:800;border:2px solid #3b82f6;color:#3b82f6}
+     .link{color:#60a5fa;font-weight:700;word-break:break-all;background:#0f172a;padding:12px;border-radius:8px;margin:10px 0;font-size:13px}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TÂCHES JOURNALIÈRES</h1>
+        </div>
+        <div class="reset">💰 GAGNEZ 24 FCFA/JOUR - 6F PAR TÂCHE - RESET 00H00</div>
+        
+        <div class="card">
+            <h3>1. SUIVRE FACEBOOK OFFICIEL</h3>
+            <p>Abonne-toi à la page Norval Business</p>
+            <a href="https://www.facebook.com/share/1HNhY9fno4/" target="_blank" class="btn btn-social">OUVRIR FACEBOOK</a>
+            <button class="btn" id="btn1" onclick="validerTache(1, 'facebook')">J'AI SUIVI +6F</button>
+        </div>
+
+        <div class="card">
+            <h3>2. SUIVRE YOUTUBE</h3>
+            <p>Abonne-toi à la chaîne NatanFES</p>
+            <a href="https://www.youtube.com/@NatanFES" target="_blank" class="btn btn-yt">OUVRIR YOUTUBE</a>
+            <button class="btn" id="btn2" onclick="validerTache(2, 'youtube')">JE SUIS ABONNÉ +6F</button>
+        </div>
+
+        <div class="card">
+            <h3>3. SUIVRE TIKTOK</h3>
+            <p>Abonne-toi au TikTok Norvalien</p>
+            <a href="https://www.tiktok.com/@norvalien?_r=1&_t=ZS-97UKoIzkiiT" target="_blank" class="btn btn-tiktok">OUVRIR TIKTOK</a>
+            <button class="btn" id="btn3" onclick="validerTache(3, 'tiktok')">JE SUIS ABONNÉ +6F</button>
+        </div>
+
+        <div class="card">
+            <h3>4. PARTAGER DANS 4 GROUPES</h3>
+            <p>Publie ton lien dans 4 groupes WhatsApp/Telegram actifs</p>
+            <div class="link" id="lienParrain"></div>
+            <button class="btn btn-social" onclick="copierLien()">COPIER MON LIEN</button>
+            <button class="btn" id="btn4" onclick="validerTache(4, 'partage')">J'AI PARTAGÉ DANS 4 GROUPES +6F</button>
+        </div>
+
+        <div class="total">TOTAL AUJOURD'HUI : <span id="totalJour">0</span> / 24 FCFA</div>
+        <button class="btn btn-social" onclick="window.location.href='dashboard.html'">RETOUR DASHBOARD</button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAnSyDW11gaKXUktRjd4W5lJoe5LbMT-ZY",
+            authDomain: "norval-buisiness.firebaseapp.com",
+            projectId: "norval-buisiness",
+            storageBucket: "norval-buisiness.firebasestorage.app",
+            messagingSenderId: "307580475568",
+            appId: "1:307580475568:web:5fe0eeb5afdd441e914375"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const numero = localStorage.getItem('norval_user');
+        if(!numero){ window.location.href = 'index.html'; }
+
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('lienParrain').textContent = window.location.origin + '/?parrain=' + numero;
+
+        function copierLien(){
+            navigator.clipboard.writeText(document.getElementById('lienParrain').textContent);
+            alert('LIEN COPIÉ!');
+        }
+
+        async function validerTache(tacheId, type){
+            const tacheKey = `tache_${type}_${numero}_${today}`;
+            
+            const check = await db.collection('taches_jour').doc(tacheKey).get();
+            if(check.exists){
+                alert('DÉJÀ VALIDÉE AUJOURD\'HUI. REVIENS DEMAIN!');
+                return;
+            }
+
+            await db.collection('users').doc(numero).update({
+                solde: firebase.firestore.FieldValue.increment(6)
+            });
+
+            await db.collection('taches_jour').doc(tacheKey).set({
+                user: numero,
+                tache: type,
+                montant: 6,
+                date: today,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            document.getElementById('btn'+tacheId).disabled = true;
+            document.getElementById('btn'+tacheId).textContent = 'VALIDÉE ✓ +6F';
+            calculerTotalJour();
+            alert('+6F AJOUTÉS À VOTRE SOLDE!');
+        }
+
+        async function calculerTotalJour(){
+            const taches = await db.collection('taches_jour')
+           .where('user', '==', numero)
+           .where('date', '==', today)
+           .get();
+            
+            let total = 0;
+            taches.forEach(doc => { total += doc.data().montant; });
+            document.getElementById('totalJour').textContent = total;
+
+            taches.forEach(doc => {
+                const type = doc.data().tache;
+                const btnMap = {facebook:1, youtube:2, tiktok:3, partage:4};
+                const btnId = btnMap[type];
+                if(btnId){
+                    document.getElementById('btn'+btnId).disabled = true;
+                    document.getElementById('btn'+btnId).textContent = 'VALIDÉE ✓ +6F';
+                }
+            });
+        }
+
+        calculerTotalJour();
+    </script>
+</body>
+</html>
