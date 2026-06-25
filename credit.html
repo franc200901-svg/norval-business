@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activation - Norval Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Montserrat',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+     .container{max-width:450px;width:100%;background:#1e293b;padding:40px;border-radius:20px;border:1px solid #334155;box-shadow:0 20px 60px rgba(0,0,0,0.5);text-align:center}
+     .logo-icon{width:70px;height:70px;background:linear-gradient(135deg,#3b82f6 0%,#1d4ed8 100%);border-radius:16px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:35px;font-weight:800;color:white}
+        h2{color:#fff;font-size:24px;font-weight:800;margin-bottom:10px;text-transform:uppercase}
+     .subtitle{color:#94a3b8;font-size:13px;margin-bottom:25px;font-weight:600}
+     .numero-box{background:linear-gradient(135deg,#1e40af 0%,#3b82f6 100%);padding:20px;border-radius:12px;margin:20px 0;box-shadow:0 10px 30px rgba(59,130,246,0.3)}
+     .numero-label{color:#bfdbfe;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+     .numero{font-size:28px;font-weight:800;color:white;letter-spacing:2px}
+        button{background:linear-gradient(135deg,#10b981 0%,#059669 100%);color:white;padding:18px;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;width:100%;margin:15px 0;text-transform:uppercase;letter-spacing:1px;box-shadow:0 10px 30px rgba(16,185,129,0.3)}
+        button:hover{transform:translateY(-2px)}
+     .note{background:#0f172a;padding:15px;border-radius:10px;border:1px solid #334155;color:#94a3b8;font-size:12px;margin-top:20px;font-weight:600}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo-icon">NB</div>
+        <h2>ACTIVATION COMPTE</h2>
+        <div class="subtitle">NORVAL BUSINESS OFFICIEL</div>
+        
+        <p style="color:#e2e8f0;font-weight:600;margin-bottom:15px">Envoyez 500 FCFA par TMoney/Flooz :</p>
+        
+        <div class="numero-box">
+            <div class="numero-label">Numéro Officiel</div>
+            <div class="numero">+228 71 61 33 89</div>
+        </div>
+        
+        <button onclick="confirmerPaiement()">J'AI ENVOYÉ 500F - ACTIVER</button>
+        <div class="note">⚡ ACTIVATION IMMÉDIATE<br>Le parrain reçoit +100F automatiquement</div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAnSyDW11gaKXUktRjd4W5lJoe5LbMT-ZY",
+            authDomain: "norval-buisiness.firebaseapp.com",
+            projectId: "norval-buisiness",
+            storageBucket: "norval-buisiness.firebasestorage.app",
+            messagingSenderId: "307580475568",
+            appId: "1:307580475568:web:5fe0eeb5afdd441e914375"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        async function confirmerPaiement(){
+            const userData = JSON.parse(localStorage.getItem('norval_temp_user'));
+            if(!userData){
+                alert("ERREUR. RECOMMENCEZ L'INSCRIPTION");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            await db.collection('users').doc(userData.numero).set({
+                numero: userData.numero,
+                parrain: userData.parrain,
+                solde: 0,
+                filleuls: 0,
+                statut: 'actif',
+                date_inscription: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            const parrainRef = db.collection('users').doc(userData.parrain);
+            const parrainDoc = await parrainRef.get();
+            if(parrainDoc.exists){
+                await parrainRef.update({
+                    solde: firebase.firestore.FieldValue.increment(100),
+                    filleuls: firebase.firestore.FieldValue.increment(1)
+                });
+                await db.collection('commissions').add({
+                    de: userData.numero,
+                    vers: userData.parrain,
+                    montant: 100,
+                    date: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            }
+
+            await db.collection('paiements_a_verifier').add({
+                numero: userData.numero,
+                parrain: userData.parrain,
+                montant: 500,
+                date: firebase.firestore.FieldValue.serverTimestamp(),
+                statut: 'a_verifier'
+            });
+
+            localStorage.setItem('norval_user', userData.numero);
+            localStorage.removeItem('norval_temp_user');
+            alert('COMPTE ACTIVÉ AVEC SUCCÈS!');
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
