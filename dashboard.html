@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Norval Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Montserrat',sans-serif;background:#0f172a;color:#e2e8f0;padding:20px}
+     .container{max-width:600px;margin:0 auto}
+     .header{background:linear-gradient(135deg,#1e40af 0%,#3b82f6 100%);padding:30px;border-radius:20px;margin-bottom:20px;box-shadow:0 10px 40px rgba(59,130,246,0.4);position:relative;overflow:hidden}
+     .header::before{content:'NB';position:absolute;top:-20px;right:-20px;font-size:120px;font-weight:800;opacity:0.1}
+     .logo-mini{width:50px;height:50px;background:white;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1d4ed8;font-size:24px;margin-bottom:15px}
+        h1{font-size:26px;font-weight:800;margin-bottom:5px;text-transform:uppercase;letter-spacing:1px}
+     .subtitle{opacity:0.9;font-size:13px;font-weight:600}
+     .card{background:#1e293b;padding:25px;border-radius:16px;border:1px solid #334155;margin-bottom:15px;box-shadow:0 4px 20px rgba(0,0,0,0.3)}
+     .card-title{font-size:12px;color:#94a3b8;text-transform:uppercase;font-weight:700;letter-spacing:1.5px;margin-bottom:12px}
+     .solde{font-size:42px;font-weight:800;color:#10b981;text-align:center;text-shadow:0 0 20px rgba(16,185,129,0.5)}
+     .stats{display:flex;justify-content:space-around;text-align:center;margin:20px 0}
+     .stat-num{font-size:28px;font-weight:800;color:#fff}
+     .stat-label{font-size:11px;color:#94a3b8;font-weight:700;text-transform:uppercase;margin-top:5px}
+     .btn{width:100%;background:linear-gradient(135deg,#3b82f6 0%,#1d4ed8 100%);color:white;padding:16px;border:none;border-radius:12px;font-weight:800;cursor:pointer;margin:8px 0;font-size:14px;text-transform:uppercase;letter-spacing:1px;box-shadow:0 8px 20px rgba(59,130,246,0.3)}
+     .btn:hover{transform:translateY(-2px)}
+     .btn-green{background:linear-gradient(135deg,#10b981 0%,#059669 100%);box-shadow:0 8px 20px rgba(16,185,129,0.3)}
+     .btn-orange{background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);box-shadow:0 8px 20px rgba(245,158,11,0.3)}
+     .link-box{background:#0f172a;padding:15px;border-radius:10px;border:2px solid #334155;word-break:break-all;margin:12px 0;font-size:13px;color:#60a5fa;font-weight:600}
+     .gains{background:linear-gradient(135deg,#1e293b 0%,#0f172a 100%);border:2px solid #f59e0b}
+     .progress-bar{background:#334155;height:10px;border-radius:5px;margin-top:12px;overflow:hidden}
+     .progress-fill{background:linear-gradient(90deg,#10b981,#34d399);height:100%;transition:width 0.5s;box-shadow:0 0 10px rgba(16,185,129,0.5)}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-mini">NB</div>
+            <h1>NORVAL BUSINESS</h1>
+            <div class="subtitle">TABLEAU DE BORD - <span id="monNumero"></span></div>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">Solde Disponible</div>
+            <div class="solde" id="solde">0 FCFA</div>
+            <div class="stats">
+                <div>
+                    <div class="stat-num" id="filleuls">0</div>
+                    <div class="stat-label">Filleuls</div>
+                </div>
+                <div>
+                    <div class="stat-num">100F</div>
+                    <div class="stat-label">Par Filleul</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card gains">
+            <div class="card-title">🎯 GAINS AUJOURD'HUI</div>
+            <div class="solde" style="color:#f59e0b" id="gainsJour">0 / 24 FCFA</div>
+            <div class="progress-bar"><div class="progress-fill" id="tachesProgress" style="width:0%"></div></div>
+            <button class="btn btn-green" onclick="window.location.href='taches.html'">FAIRE LES TÂCHES +24F</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">🔗 LIEN DE PARRAINAGE</div>
+            <div class="link-box" id="lienParrain"></div>
+            <button class="btn" onclick="copierLien()">COPIER LE LIEN</button>
+        </div>
+
+        <div class="card">
+            <button class="btn btn-orange" onclick="retrait()">DEMANDER RETRAIT MIN 500F</button>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAnSyDW11gaKXUktRjd4W5lJoe5LbMT-ZY",
+            authDomain: "norval-buisiness.firebaseapp.com",
+            projectId: "norval-buisiness",
+            storageBucket: "norval-buisiness.firebasestorage.app",
+            messagingSenderId: "307580475568",
+            appId: "1:307580475568:web:5fe0eeb5afdd441e914375"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        const numero = localStorage.getItem('norval_user');
+        if(!numero){ window.location.href = 'index.html'; }
+
+        document.getElementById('monNumero').textContent = numero;
+        document.getElementById('lienParrain').textContent = window.location.origin + '/?parrain=' + numero;
+
+        db.collection('users').doc(numero).onSnapshot((doc) => {
+            if(doc.exists){
+                const data = doc.data();
+                document.getElementById('solde').textContent = data.solde.toLocaleString() + ' FCFA';
+                document.getElementById('filleuls').textContent = data.filleuls;
+            }
+        });
+
+        const today = new Date().toISOString().split('T')[0];
+        db.collection('taches_jour')
+       .where('user', '==', numero)
+       .where('date', '==', today)
+       .onSnapshot((snapshot) => {
+                let total = 0;
+                snapshot.forEach(doc => { total += doc.data().montant; });
+                document.getElementById('gainsJour').textContent = total + ' / 24 FCFA';
+                document.getElementById('tachesProgress').style.width = (total/24)*100 + '%';
+            });
+
+        function copierLien(){
+            navigator.clipboard.writeText(document.getElementById('lienParrain').textContent);
+            alert('LIEN COPIÉ! PARTAGE-LE POUR GAGNER 100F/FILLEUL');
+        }
+
+        function retrait(){
+            const montant = prompt('MONTANT À RETIRER (MIN 500F):');
+            if(montant && montant >= 500){
+                db.collection('retraits').add({
+                    numero: numero,
+                    montant: parseInt(montant),
+                    date: firebase.firestore.FieldValue.serverTimestamp(),
+                    statut: 'en_attente'
+                });
+                alert('DEMANDE DE ' + montant + 'F ENVOYÉE. TRAITEMENT SOUS 24H.');
+            } else {
+                alert('MINIMUM 500F');
+            }
+        }
+    </script>
+</body>
+</html>
