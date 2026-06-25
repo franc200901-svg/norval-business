@@ -43,17 +43,6 @@ DOCTYPE html>
 
         async function inscrire(){
             const numero = document.getElementById('numero').value.trim();
-            const parrain = document.getElementById('parrain').value.trim();
-            const error = document.getElementById('error');
-            
-            if(!numero ||!parrain){
-                error.textContent = "Remplis tous les champs";
-                return;
-            }
-            if(numero === parrain){
-                error.textContent = "Tu ne peux pas être ton propre parrain";
-                return;
-            }
 
             const checkUser = await db.collection('users').doc(numero).get();
             if(checkUser.exists){
